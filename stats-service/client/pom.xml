@@ -11,21 +11,10 @@
 
     <artifactId>client</artifactId>
 
-    <properties>
-        <maven.compiler.source>11</maven.compiler.source>
-        <maven.compiler.target>11</maven.compiler.target>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    </properties>
-
     <dependencies>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-web</artifactId>
-        </dependency>
         <dependency>
             <groupId>ru.practicum.stats-service</groupId>
             <artifactId>dto</artifactId>
-            <version>${project.version}</version>
         </dependency>
     </dependencies>
 

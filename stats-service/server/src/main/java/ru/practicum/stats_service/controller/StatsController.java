@@ -30,7 +30,7 @@ public class StatsController {
     public List<ViewStatsDto> getStats(@RequestParam @DateTimeFormat(pattern = DATE_TIME_FORMAT) LocalDateTime start,
                                        @RequestParam @DateTimeFormat(pattern = DATE_TIME_FORMAT) LocalDateTime end,
                                        @RequestParam (required = false) List<String> uris,
-                                       @RequestParam (required = false, defaultValue = "false") Boolean unique) {
+                                       @RequestParam (defaultValue = "false") Boolean unique) {
         log.info("GET {}?start={}&end={}&uris={}&unique={}", STATS_ENDPOINT, start, end, uris, unique);
         return statsService.getStats(start, end, uris, unique);
     }
