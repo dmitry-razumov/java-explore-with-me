@@ -10,11 +10,16 @@
     </parent>
 
     <artifactId>client</artifactId>
+    <packaging>jar</packaging>
 
     <dependencies>
         <dependency>
             <groupId>ru.practicum.stats-service</groupId>
             <artifactId>dto</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
         </dependency>
     </dependencies>
 
