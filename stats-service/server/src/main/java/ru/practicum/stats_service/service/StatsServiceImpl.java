@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.stats_service.ViewStatsDto;
+import ru.practicum.stats_service.exception.ValidationException;
 import ru.practicum.stats_service.repository.StatsRepository;
 import ru.practicum.stats_service.model.EndpointHit;
 import java.time.LocalDateTime;
@@ -28,6 +29,9 @@ public class StatsServiceImpl implements StatsService {
     @Override
     public List<ViewStatsDto> getStats(LocalDateTime start, LocalDateTime end, List<String> uris, Boolean unique) {
         log.info("запрос start = {}, end = {}, uris = {}, unique = {}", start, end, uris, unique);
+        if (end.isBefore(start)) {
+            throw new ValidationException("дата начала не может быть позже даты конца выборки");
+        }
         List<ViewStatsDto> viewStatsList;
         if (unique) {
             viewStatsList = statsRepository.getViewStatsUnique(start, end, uris);
