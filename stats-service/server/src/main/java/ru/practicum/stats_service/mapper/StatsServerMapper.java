@@ -10,5 +10,6 @@ public interface StatsServerMapper {
     @Mapping(target = "hitTimestamp", source = "timestamp"/*, dateFormat = "yyyy-MM-dd HH:mm:ss"*/)
     EndpointHit toHit(EndpointHitDto endpointHitDto);
 
+    @Mapping(target = "timestamp", source = "hitTimestamp")
     EndpointHitDto toHitDto(EndpointHit endpointHit);
 }
