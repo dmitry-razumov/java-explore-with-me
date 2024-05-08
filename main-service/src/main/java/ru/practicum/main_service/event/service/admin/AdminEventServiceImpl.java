@@ -8,6 +8,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.main_service.category.model.Category;
 import ru.practicum.main_service.category.repository.CategoryRepository;
+import ru.practicum.main_service.event.dto.EventFullDto;
+import ru.practicum.main_service.event.dto.UpdateEventAdminRequestDto;
 import ru.practicum.main_service.event.enums.EventState;
 import ru.practicum.main_service.event.mapper.EventMapper;
 import ru.practicum.main_service.event.model.Event;
@@ -40,7 +42,8 @@ public class AdminEventServiceImpl implements AdminEventService {
     // admin
     @Override
     @Transactional
-    public Event updateEventByAdmin(Event event, Long eventId) {
+    public EventFullDto updateEventByAdmin(UpdateEventAdminRequestDto updateEventAdminRequestDto, Long eventId) {
+        Event event = eventMapper.toEvent(updateEventAdminRequestDto);
         Event updateEvent = eventRepository.findById(eventId)
                 .orElseThrow(() -> new NotFoundException(String.format("Event with id=%d was not found", eventId)));
         log.info("событие для обновления {}", updateEvent);
@@ -82,11 +85,11 @@ public class AdminEventServiceImpl implements AdminEventService {
         Map<Long, Long> views = eventStats.getStats(List.of(updateEvent));
         updateEvent.setViews(views.getOrDefault(updateEvent.getId(), 0L));
         log.info("обновлено событие {}", updateEvent);
-        return updateEvent;
+        return eventMapper.toEventFullDto(updateEvent);
     }
 
     @Override
-    public List<Event> getEventsByAdmin(List<Long> userIds, List<String> eventStates, List<Long> categoriesIds,
+    public List<EventFullDto> getEventsByAdmin(List<Long> userIds, List<String> eventStates, List<Long> categoriesIds,
                                         LocalDateTime rangeStart, LocalDateTime rangeEnd, Integer from, Integer size) {
         Specification<Event> specification = (Root<Event> root, CriteriaQuery<?> query, CriteriaBuilder builder) -> {
             List<Predicate> predicates = new ArrayList<>();
@@ -114,7 +117,7 @@ public class AdminEventServiceImpl implements AdminEventService {
         Map<Long, Long> views = eventStats.getStats(events);
         events.forEach(event -> event.setViews(views.getOrDefault(event.getId(), 0L)));
         log.info("получены события {}", events);
-        return events;
+        return eventMapper.toEventFullDto(events);
     }
 
     private EventState getState(String state) {

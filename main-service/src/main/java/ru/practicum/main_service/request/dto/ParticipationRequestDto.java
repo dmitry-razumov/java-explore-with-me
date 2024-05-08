@@ -8,12 +8,14 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
+import static ru.practicum.main_service.utils.Constants.DATE_TIME_FORMAT;
+
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 public class ParticipationRequestDto {
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = DATE_TIME_FORMAT)
     private LocalDateTime created;
     private Long event;
     private Long id;

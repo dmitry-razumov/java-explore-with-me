@@ -4,6 +4,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import ru.practicum.main_service.compilation.dto.CompilationDto;
+import ru.practicum.main_service.compilation.mapper.CompilationMapper;
 import ru.practicum.main_service.compilation.model.Compilation;
 import ru.practicum.main_service.compilation.repository.CompilationRepository;
 import ru.practicum.main_service.exception.NotFoundException;
@@ -17,9 +19,10 @@ import java.util.List;
 @RequiredArgsConstructor
 public class PublicCompilationServiceImpl implements PublicCompilationService {
     private final CompilationRepository compilationRepository;
+    private final CompilationMapper compilationMapper;
 
     @Override
-    public List<Compilation> getCompilations(Boolean pinned, Integer from, Integer size) {
+    public List<CompilationDto> getCompilations(Boolean pinned, Integer from, Integer size) {
         Pageable page = PageRequestCustom.get(from, size);
         List<Compilation> compilations;
         if (pinned == null) {
@@ -33,11 +36,11 @@ public class PublicCompilationServiceImpl implements PublicCompilationService {
             }
         }
         log.info("получены подборки событий {}", compilations);
-        return compilations;
+        return compilationMapper.toDto(compilations);
     }
 
     @Override
-    public Compilation getCompilation(Long compId) {
+    public CompilationDto getCompilation(Long compId) {
         Compilation compilation = compilationRepository.findById(compId)
                 .orElseThrow(() ->
                         new NotFoundException(String.format("Compilation with id=%d was not found", compId)));
@@ -45,6 +48,6 @@ public class PublicCompilationServiceImpl implements PublicCompilationService {
             compilation.setEvents(new HashSet<>(compilation.getEvents()));
         }
         log.info("получена подборка событий {}", compilation);
-        return compilation;
+        return compilationMapper.toDto(compilation);
     }
 }

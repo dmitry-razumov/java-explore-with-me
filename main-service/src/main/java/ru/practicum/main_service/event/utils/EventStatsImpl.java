@@ -17,12 +17,14 @@ import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static ru.practicum.main_service.utils.Constants.DATE_TIME_FORMAT;
+
 @Component
 @RequiredArgsConstructor
 @ComponentScan("ru.practicum.stats_service")
 public class EventStatsImpl implements EventStats {
     private final StatsClient statsClient;
-    ObjectMapper mapper = new ObjectMapper();
+    private final ObjectMapper mapper = new ObjectMapper();
 
     @Override
     public Map<Long, Long> getStats(List<Event> events) {
@@ -41,8 +43,8 @@ public class EventStatsImpl implements EventStats {
                         event -> String.format("/events/%d", event.getId())));
 
         ResponseEntity<Object> response = statsClient.getStats(
-                start.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")),
-                end.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")),
+                start.format(DateTimeFormatter.ofPattern(DATE_TIME_FORMAT)),
+                end.format(DateTimeFormatter.ofPattern(DATE_TIME_FORMAT)),
                 new ArrayList<>(uris.values()), true);
 
         Map<Long, Long> resultMap = new HashMap<>();

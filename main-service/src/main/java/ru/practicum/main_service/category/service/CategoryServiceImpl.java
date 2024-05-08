@@ -5,6 +5,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.practicum.main_service.category.dto.CategoryDto;
+import ru.practicum.main_service.category.dto.NewCategoryDto;
+import ru.practicum.main_service.category.mapper.CategoryMapper;
 import ru.practicum.main_service.category.model.Category;
 import ru.practicum.main_service.category.repository.CategoryRepository;
 import ru.practicum.main_service.exception.NotFoundException;
@@ -18,23 +21,24 @@ import java.util.List;
 @Transactional(readOnly = true)
 public class CategoryServiceImpl implements CategoryService {
     private final CategoryRepository categoryRepository;
+    private final CategoryMapper categoryMapper;
 
     @Override
     @Transactional
-    public Category addCategory(Category category) {
-        Category newCategory = categoryRepository.save(category);
+    public CategoryDto addCategory(NewCategoryDto newCategoryDto) {
+        Category newCategory = categoryRepository.save(categoryMapper.toCategory(newCategoryDto));
         log.info("создана категория {}", newCategory);
-        return newCategory;
+        return categoryMapper.toCategoryDto(newCategory);
     }
 
     @Override
     @Transactional
-    public Category updateCategory(Category category, Long catId) {
+    public CategoryDto updateCategory(NewCategoryDto newCategoryDto, Long catId) {
         Category updatedCategory = categoryRepository.findById(catId)
                 .orElseThrow(() -> new NotFoundException(String.format("Category with id=%d was not found", catId)));
-        updatedCategory.setName(category.getName());
+        updatedCategory.setName(categoryMapper.toCategory(newCategoryDto).getName());
         log.info("обновлена категория {}", updatedCategory);
-        return updatedCategory;
+        return categoryMapper.toCategoryDto(updatedCategory);
     }
 
     @Override
@@ -47,18 +51,18 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public List<Category> getCategories(int from, int size) {
+    public List<CategoryDto> getCategories(int from, int size) {
         Pageable page = PageRequestCustom.get(from, size);
         List<Category> categories = categoryRepository.findAllByOrderById(page);
         log.info("получены категории {}", categories);
-        return categories;
+        return categoryMapper.toCategoryDto(categories);
     }
 
     @Override
-    public Category getCategory(Long catId) {
+    public CategoryDto getCategory(Long catId) {
         Category category = categoryRepository.findById(catId)
                 .orElseThrow(() -> new NotFoundException(String.format("Category with id=%d was not found", catId)));
         log.info("получена категория {} c id={}", category, catId);
-        return category;
+        return categoryMapper.toCategoryDto(category);
     }
 }

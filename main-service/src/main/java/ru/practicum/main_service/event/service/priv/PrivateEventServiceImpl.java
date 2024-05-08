@@ -7,8 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.main_service.category.model.Category;
 import ru.practicum.main_service.category.repository.CategoryRepository;
-import ru.practicum.main_service.event.dto.EventRequestStatusUpdateRequest;
-import ru.practicum.main_service.event.dto.EventRequestStatusUpdateResult;
+import ru.practicum.main_service.event.dto.*;
 import ru.practicum.main_service.event.enums.EventState;
 import ru.practicum.main_service.event.mapper.EventMapper;
 import ru.practicum.main_service.event.model.Event;
@@ -49,7 +48,8 @@ public class PrivateEventServiceImpl implements PrivateEventService {
     // priv
     @Override
     @Transactional
-    public Event addEvent(Event event, Long userId) {
+    public EventFullDto addEvent(NewEventDto newEventDto, Long userId) {
+        Event event = eventMapper.toEvent(newEventDto);
         if (!event.getEventDate().isAfter(LocalDateTime.now().plusHours(USER_DELTA_IN_HOURS))) {
             throw new BadRequestException("Field: eventDate. Error: должно содержать дату, которая еще не наступила." +
                     " Value: " + event.getEventDate());
@@ -65,11 +65,11 @@ public class PrivateEventServiceImpl implements PrivateEventService {
         event.setState(EventState.PENDING);
         Event newEvent = eventRepository.save(event);
         log.info("создано событие {}", newEvent);
-        return newEvent;
+        return eventMapper.toEventFullDto(newEvent);
     }
 
     @Override
-    public List<Event> getEvents(Long userId, Integer from, Integer size) {
+    public List<EventShortDto> getEvents(Long userId, Integer from, Integer size) {
         userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException(String.format("User with id=%d was not found", userId)));
         Pageable page = PageRequestCustom.get(from, size);
@@ -77,7 +77,7 @@ public class PrivateEventServiceImpl implements PrivateEventService {
         Map<Long, Long> views = eventStats.getStats(events);
         events.forEach(event -> event.setViews(views.getOrDefault(event.getId(), 0L)));
         log.info("получены события {}", events);
-        return events;
+        return eventMapper.toEventShortDto(events);
     }
 
     @Override
@@ -146,29 +146,30 @@ public class PrivateEventServiceImpl implements PrivateEventService {
     }
 
     @Override
-    public List<ParticipationRequest> getEventParticipants(Long userId, Long eventId) {
+    public List<ParticipationRequestDto> getEventParticipants(Long userId, Long eventId) {
         if (eventRepository.findByIdAndInitiatorId(eventId, userId).isEmpty()) {
             return Collections.emptyList();
         }
         List<ParticipationRequest> requests = requestRepository.findAllByEventId(eventId);
         log.info("получены requests {} для eventId={} userId={}", requests, eventId, userId);
-        return requests;
+        return requestMapper.toDto(requests);
     }
 
     @Override
-    public Event getEvent(Long userId, Long eventId) {
+    public EventFullDto getEvent(Long userId, Long eventId) {
         Event event = eventRepository.findByIdAndInitiatorId(eventId, userId)
                 .orElseThrow(() -> new NotFoundException(String.format("Event with id=%d for user with id=%d" +
                         " was not found", eventId, userId)));
         Map<Long, Long> views = eventStats.getStats(List.of(event));
         event.setViews(views.getOrDefault(event.getId(), 0L));
         log.info("Для user id={} получено событие {}", userId, event);
-        return event;
+        return eventMapper.toEventFullDto(event);
     }
 
     @Override
     @Transactional
-    public Event updateEvent(Long userId, Long eventId, Event event) {
+    public EventFullDto updateEvent(Long userId, Long eventId, UpdateEventUserRequestDto updateEventUserRequestDto) {
+        Event event = eventMapper.toEvent(updateEventUserRequestDto);
         Event updateEvent = eventRepository.findByIdAndInitiatorId(eventId, userId)
                 .orElseThrow(() -> new NotFoundException(String.format("Event with id=%d for user with id=%d" +
                         " was not found", eventId, userId)));
@@ -195,6 +196,6 @@ public class PrivateEventServiceImpl implements PrivateEventService {
         Map<Long, Long> views = eventStats.getStats(List.of(updateEvent));
         updateEvent.setViews(views.getOrDefault(updateEvent.getId(), 0L));
         log.info("обновлено событие {}", updateEvent);
-        return updateEvent;
+        return eventMapper.toEventFullDto(updateEvent);
     }
 }

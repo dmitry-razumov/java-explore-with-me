@@ -8,7 +8,6 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.main_service.event.dto.EventFullDto;
 import ru.practicum.main_service.event.dto.UpdateEventAdminRequestDto;
-import ru.practicum.main_service.event.mapper.EventMapper;
 import ru.practicum.main_service.event.service.admin.AdminEventService;
 
 import javax.validation.Valid;
@@ -17,22 +16,22 @@ import javax.validation.constraints.PositiveOrZero;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import static ru.practicum.main_service.utils.Constants.DATE_TIME_FORMAT;
+
 @Slf4j
 @Validated
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/admin/events")
 public class AdminEventController {
-    private static final String DATE_TIME_FORMAT = "yyyy-MM-dd HH:mm:ss";
     private final AdminEventService adminEventService;
-    private final EventMapper eventMapper;
 
     @PatchMapping("/{eventId}")
     @ResponseStatus(HttpStatus.OK)
     public EventFullDto updateEventByAdmin(@PathVariable Long eventId,
                                            @RequestBody @Valid UpdateEventAdminRequestDto event) {
         log.info("PATCH /admin/events/{} изменениe информации о событии админом {}", eventId, event);
-        return eventMapper.toEventFullDto(adminEventService.updateEventByAdmin(eventMapper.toEvent(event), eventId));
+        return adminEventService.updateEventByAdmin(event, eventId);
     }
 
     @GetMapping
@@ -50,7 +49,7 @@ public class AdminEventController {
         log.info("GET /admin/events поиск событий для userIds={} eventStates={} categoriesIds={} " +
                         "rangeStart={} rangeEnd={} from={} size={}", userIds, eventStates, categoriesIds,
                         rangeStart, rangeEnd, from, size);
-        return eventMapper.toEventFullDto(adminEventService.getEventsByAdmin(userIds, eventStates, categoriesIds,
-                rangeStart, rangeEnd, from, size));
+        return adminEventService.getEventsByAdmin(userIds, eventStates, categoriesIds,
+                rangeStart, rangeEnd, from, size);
     }
 }

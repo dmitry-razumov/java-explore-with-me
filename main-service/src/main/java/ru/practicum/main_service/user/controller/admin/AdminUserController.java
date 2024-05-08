@@ -6,7 +6,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.main_service.user.dto.UserDto;
-import ru.practicum.main_service.user.mapper.UserMapper;
 import ru.practicum.main_service.user.service.UserService;
 
 import javax.validation.Valid;
@@ -21,13 +20,12 @@ import java.util.List;
 @RequestMapping("/admin/users")
 public class AdminUserController {
     private final UserService userService;
-    private final UserMapper userMapper;
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public UserDto registerUser(@Valid @RequestBody UserDto userDto) {
         log.info("POST /admin/users Данные добавляемого пользователя {}", userDto);
-        return userMapper.toUserDto(userService.registerUser(userMapper.toUser(userDto)));
+        return userService.registerUser(userDto);
     }
 
     @GetMapping
@@ -36,7 +34,7 @@ public class AdminUserController {
                                   @RequestParam(defaultValue = "0") @PositiveOrZero int from,
                                   @RequestParam(defaultValue = "10") @Positive int size) {
         log.info("GET /admin/users Запрошены пользователи {} from={} size={}", ids, from, size);
-        return userMapper.toUserDto(userService.getUsers(ids, from, size));
+        return userService.getUsers(ids, from, size);
     }
 
     @DeleteMapping("/{userId}")

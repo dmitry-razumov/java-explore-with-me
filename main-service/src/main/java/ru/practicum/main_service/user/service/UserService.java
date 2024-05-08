@@ -1,13 +1,13 @@
 package ru.practicum.main_service.user.service;
 
-import ru.practicum.main_service.user.model.User;
+import ru.practicum.main_service.user.dto.UserDto;
 
 import java.util.List;
 
 public interface UserService {
-    User registerUser(User user);
+    UserDto registerUser(UserDto userDto);
 
-    List<User> getUsers(List<Long> ids, int from, int size);
+    List<UserDto> getUsers(List<Long> ids, int from, int size);
 
     void delete(Long userId);
 }

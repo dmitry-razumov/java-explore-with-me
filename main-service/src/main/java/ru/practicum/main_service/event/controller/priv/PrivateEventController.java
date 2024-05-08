@@ -6,10 +6,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.main_service.event.dto.*;
-import ru.practicum.main_service.event.mapper.EventMapper;
 import ru.practicum.main_service.event.service.priv.PrivateEventService;
 import ru.practicum.main_service.request.dto.ParticipationRequestDto;
-import ru.practicum.main_service.request.mapper.RequestMapper;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Positive;
@@ -23,8 +21,6 @@ import java.util.List;
 @RequestMapping("/users/{userId}/events")
 public class PrivateEventController {
     private final PrivateEventService privateEventService;
-    private final EventMapper eventMapper;
-    private final RequestMapper requestMapper;
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
@@ -33,7 +29,7 @@ public class PrivateEventController {
                                          @RequestParam(defaultValue = "10") @Positive Integer size) {
         log.info("GET /users/{}/events Получение событий, добавленных текущим пользователем from={} size={}",
                 userId, from, size);
-        return eventMapper.toEventShortDto(privateEventService.getEvents(userId, from, size));
+        return privateEventService.getEvents(userId, from, size);
     }
 
     @PostMapping
@@ -41,7 +37,7 @@ public class PrivateEventController {
     public EventFullDto addEvent(@PathVariable Long userId,
                                  @RequestBody @Valid NewEventDto newEventDto) {
         log.info("POST /users/{}/events Добавление нового события {}", userId, newEventDto);
-        return eventMapper.toEventFullDto(privateEventService.addEvent(eventMapper.toEvent(newEventDto), userId));
+        return privateEventService.addEvent(newEventDto, userId);
     }
 
     @GetMapping("/{eventId}")
@@ -49,17 +45,16 @@ public class PrivateEventController {
     public EventFullDto getEvent(@PathVariable Long userId, @PathVariable Long eventId) {
         log.info("GET /users/{}/events/{} Получение полной информации о событии добавленном текущим пользователем",
                 userId, eventId);
-        return eventMapper.toEventFullDto(privateEventService.getEvent(userId, eventId));
+        return privateEventService.getEvent(userId, eventId);
     }
 
     @PatchMapping("/{eventId}")
     @ResponseStatus(HttpStatus.OK)
     public EventFullDto updateEvent(@PathVariable Long userId, @PathVariable Long eventId,
                                     @RequestBody @Valid UpdateEventUserRequestDto event) {
-        log.info("GET /users/{}/events/{} Изменение события добавленного текущим пользователем {}",
+        log.info("PATCH /users/{}/events/{} Изменение события добавленного текущим пользователем {}",
                 userId, eventId, event);
-        return eventMapper.toEventFullDto(privateEventService.updateEvent(userId, eventId,
-                eventMapper.toEvent(event)));
+        return privateEventService.updateEvent(userId, eventId, event);
     }
 
     @PatchMapping("/{eventId}/requests")
@@ -78,6 +73,6 @@ public class PrivateEventController {
                                                               @PathVariable Long eventId) {
         log.info("GET /users/{}/events/{}/requests Получение о запросах на участие в событии текущего пользователя",
                 userId, eventId);
-        return requestMapper.toDto(privateEventService.getEventParticipants(userId, eventId));
+        return privateEventService.getEventParticipants(userId, eventId);
     }
 }

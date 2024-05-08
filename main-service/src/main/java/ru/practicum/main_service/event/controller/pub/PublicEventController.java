@@ -8,7 +8,6 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.main_service.event.dto.EventFullDto;
 import ru.practicum.main_service.event.dto.EventShortDto;
-import ru.practicum.main_service.event.mapper.EventMapper;
 import ru.practicum.main_service.event.service.pub.PublicEventService;
 import ru.practicum.main_service.event.utils.EventStats;
 
@@ -18,15 +17,15 @@ import javax.validation.constraints.PositiveOrZero;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import static ru.practicum.main_service.utils.Constants.DATE_TIME_FORMAT;
+
 @Slf4j
 @Validated
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/events")
 public class PublicEventController {
-    private static final String DATE_TIME_FORMAT = "yyyy-MM-dd HH:mm:ss";
     private final PublicEventService publicEventService;
-    private final EventMapper eventMapper;
     private final EventStats eventStats;
 
     @GetMapping
@@ -48,8 +47,8 @@ public class PublicEventController {
                         "rangeStart={} rangeEnd={} onlyAvailable={} sort={} from={} size={}", text, categoriesIds,
                 paid, rangeStart, rangeEnd, onlyAvailable, sort, from, size);
         eventStats.saveStats(request);
-        return eventMapper.toEventShortDto(publicEventService.getEvents(text, categoriesIds,
-                paid, rangeStart, rangeEnd, onlyAvailable, sort, from, size));
+        return publicEventService.getEvents(text, categoriesIds, paid, rangeStart, rangeEnd, onlyAvailable, sort,
+                from, size);
     }
 
     @GetMapping("/{id}")
@@ -57,6 +56,6 @@ public class PublicEventController {
     public EventFullDto getEvent(@PathVariable Long id, HttpServletRequest request) {
         log.info("GET /events/{} Получение подробной информации об опубликованном событии", id);
         eventStats.saveStats(request);
-        return eventMapper.toEventFullDto(publicEventService.getEvent(id));
+        return publicEventService.getEvent(id);
     }
 }

@@ -4,6 +4,7 @@ import lombok.*;
 import ru.practicum.main_service.event.model.Event;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
 import java.util.Set;
 
 @Data
@@ -20,6 +21,7 @@ public class Compilation {
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
     private Set<Event> events;
+    @NotBlank
     private String title;
     private Boolean pinned;
 }

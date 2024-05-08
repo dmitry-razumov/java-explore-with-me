@@ -12,6 +12,8 @@ import ru.practicum.main_service.user.model.User;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
+import static ru.practicum.main_service.utils.Constants.DATE_TIME_FORMAT;
+
 @Data
 @Builder
 @AllArgsConstructor
@@ -22,7 +24,7 @@ public class ParticipationRequest {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = DATE_TIME_FORMAT)
     private LocalDateTime created;
     @ManyToOne
     private Event event;

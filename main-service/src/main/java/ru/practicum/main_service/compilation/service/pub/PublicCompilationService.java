@@ -1,11 +1,11 @@
 package ru.practicum.main_service.compilation.service.pub;
 
-import ru.practicum.main_service.compilation.model.Compilation;
+import ru.practicum.main_service.compilation.dto.CompilationDto;
 
 import java.util.List;
 
 public interface PublicCompilationService {
-    List<Compilation> getCompilations(Boolean pinned, Integer from, Integer size);
+    List<CompilationDto> getCompilations(Boolean pinned, Integer from, Integer size);
 
-    Compilation getCompilation(Long compId);
+    CompilationDto getCompilation(Long compId);
 }

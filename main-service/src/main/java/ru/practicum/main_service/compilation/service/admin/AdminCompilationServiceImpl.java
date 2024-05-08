@@ -4,12 +4,15 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.practicum.main_service.compilation.dto.CompilationDto;
 import ru.practicum.main_service.compilation.dto.NewCompilationDto;
 import ru.practicum.main_service.compilation.dto.UpdateCompilationRequest;
+import ru.practicum.main_service.compilation.mapper.CompilationMapper;
 import ru.practicum.main_service.compilation.model.Compilation;
 import ru.practicum.main_service.compilation.repository.CompilationRepository;
 import ru.practicum.main_service.event.model.Event;
 import ru.practicum.main_service.event.repository.EventRepository;
+import ru.practicum.main_service.exception.BadRequestException;
 import ru.practicum.main_service.exception.NotFoundException;
 
 import java.util.ArrayList;
@@ -23,10 +26,11 @@ import java.util.List;
 public class AdminCompilationServiceImpl implements AdminCompilationService {
     private final CompilationRepository compilationRepository;
     private final EventRepository eventRepository;
+    private final CompilationMapper compilationMapper;
 
     @Override
     @Transactional
-    public Compilation saveCompilation(NewCompilationDto newCompilationDto) {
+    public CompilationDto saveCompilation(NewCompilationDto newCompilationDto) {
         List<Event> events = new ArrayList<>();
         if (newCompilationDto.getEvents() != null) {
             events = eventRepository.findAllById(newCompilationDto.getEvents());
@@ -39,7 +43,7 @@ public class AdminCompilationServiceImpl implements AdminCompilationService {
                         .build()
         );
         log.info("создана подборка {}", compilation);
-        return compilation;
+        return compilationMapper.toDto(compilation);
     }
 
     @Override
@@ -54,7 +58,7 @@ public class AdminCompilationServiceImpl implements AdminCompilationService {
 
     @Override
     @Transactional
-    public Compilation updateCompilation(UpdateCompilationRequest updateCompilationRequest, Long compId) {
+    public CompilationDto updateCompilation(UpdateCompilationRequest updateCompilationRequest, Long compId) {
         Compilation compilation = compilationRepository.findById(compId)
                 .orElseThrow(() ->
                         new NotFoundException(String.format("Compilation with id=%d was not found", compId)));
@@ -65,9 +69,13 @@ public class AdminCompilationServiceImpl implements AdminCompilationService {
             compilation.setPinned(updateCompilationRequest.getPinned());
         }
         if (updateCompilationRequest.getTitle() != null) {
-            compilation.setTitle(updateCompilationRequest.getTitle());
+            if (!updateCompilationRequest.getTitle().isBlank()) {
+                compilation.setTitle(updateCompilationRequest.getTitle());
+            } else {
+                throw new BadRequestException("Field: title. Error: must not be blank");
+            }
         }
         log.info("обновлена подборка {}", compilation);
-        return compilation;
+        return compilationMapper.toDto(compilation);
     }
 }

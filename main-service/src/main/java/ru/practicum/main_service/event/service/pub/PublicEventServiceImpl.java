@@ -5,8 +5,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import ru.practicum.main_service.event.dto.EventFullDto;
+import ru.practicum.main_service.event.dto.EventShortDto;
 import ru.practicum.main_service.event.enums.EventSort;
 import ru.practicum.main_service.event.enums.EventState;
+import ru.practicum.main_service.event.mapper.EventMapper;
 import ru.practicum.main_service.event.model.Event;
 import ru.practicum.main_service.event.repository.EventRepository;
 import ru.practicum.main_service.event.utils.EventStats;
@@ -25,11 +28,12 @@ import java.util.stream.Collectors;
 public class PublicEventServiceImpl implements PublicEventService {
     private final EventRepository eventRepository;
     private final EventStats eventStats;
+    private final EventMapper eventMapper;
 
     @Override
-    public List<Event> getEvents(String text, List<Long> categoriesIds, Boolean paid,
-                                 LocalDateTime rangeStart, LocalDateTime rangeEnd, Boolean onlyAvailable,
-                                 String sort, Integer from, Integer size) {
+    public List<EventShortDto> getEvents(String text, List<Long> categoriesIds, Boolean paid,
+                                         LocalDateTime rangeStart, LocalDateTime rangeEnd, Boolean onlyAvailable,
+                                         String sort, Integer from, Integer size) {
         if (rangeStart != null && rangeEnd.isBefore(rangeStart)) {
             throw new BadRequestException("конечные дата и время должны быть позже начальной даты и времени");
         }
@@ -81,20 +85,20 @@ public class PublicEventServiceImpl implements PublicEventService {
                 }
             }
             log.info("получены сортированные события {}", sorted);
-            return sorted;
+            return eventMapper.toEventShortDto(sorted);
         }
         log.info("получены несортированные события {}", events);
-        return events;
+        return eventMapper.toEventShortDto(events);
     }
 
     @Override
-    public Event getEvent(Long id) {
+    public EventFullDto getEvent(Long id) {
         Event event = eventRepository.findByIdAndState(id, EventState.PUBLISHED)
                 .orElseThrow(() -> new NotFoundException(String.format("Event with id=%d was not found", id)));
         Map<Long, Long> views = eventStats.getStats(List.of(event));
         event.setViews(views.getOrDefault(event.getId(), 0L));
         log.info("получено событие {}", event);
-        return event;
+        return eventMapper.toEventFullDto(event);
     }
 
     private EventSort getSort(String sort) {

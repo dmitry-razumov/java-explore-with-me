@@ -14,6 +14,8 @@ import javax.validation.constraints.Size;
 import java.time.LocalDateTime;
 import java.util.Set;
 
+import static ru.practicum.main_service.utils.Constants.DATE_TIME_FORMAT;
+
 @Data
 @Builder
 @AllArgsConstructor
@@ -35,7 +37,7 @@ public class Event {
     @NotBlank
     @Size(min = 20, max = 7000)
     private String description;
-    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @DateTimeFormat(pattern = DATE_TIME_FORMAT)
     private LocalDateTime eventDate;
     @ManyToOne(fetch = FetchType.LAZY)
     private User initiator;

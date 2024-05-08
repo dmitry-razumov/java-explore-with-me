@@ -26,7 +26,6 @@ public class ErrorHandler {
     @ExceptionHandler(ValidationException.class)
     public ApiError handleValidationException(ValidationException e) {
         log.error(String.format("Validation error: %s", e.getMessage()));
-//        log.error(String.format("stackTrace: %s", stackTrace(e)));
         return ApiError.of(
                 HttpStatus.BAD_REQUEST,
                 "Incorrectly made request.",
@@ -38,7 +37,6 @@ public class ErrorHandler {
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ApiError handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
         log.error(String.format("MethodArgumentNotValid error: %s", e.getMessage()));
-//        log.error(String.format("stackTrace: %s", stackTrace(e)));
         return ApiError.of(
                 HttpStatus.BAD_REQUEST,
                 "Incorrectly made request.",
@@ -50,7 +48,6 @@ public class ErrorHandler {
     @ExceptionHandler(NotFoundException.class)
     public ApiError handleNotFoundException(NotFoundException e) {
         log.error(String.format("NotFound error: %s", e.getMessage()));
-//        log.error(String.format("stackTrace: %s", stackTrace(e)));
         return ApiError.of(
                 HttpStatus.NOT_FOUND,
                 "The required object was not found.",
@@ -63,7 +60,6 @@ public class ErrorHandler {
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ApiError handleDataIntegrityViolationException(DataIntegrityViolationException e) {
         log.error(String.format("DataIntegrityViolation error: %s", e.getMessage()));
-//        log.error(String.format("stackTrace: %s", stackTrace(e)));
         return ApiError.of(
                 HttpStatus.CONFLICT,
                 "Integrity constraint has been violated.",
@@ -75,7 +71,6 @@ public class ErrorHandler {
     @ExceptionHandler(BadRequestException.class)
     public ApiError handleForbiddenException(BadRequestException e) {
         log.error(String.format("Forbidden error: %s", e.getMessage()));
-//        log.error(String.format("stackTrace: %s", stackTrace(e)));
         return ApiError.of(
                 HttpStatus.FORBIDDEN,
                 "For the requested operation the conditions are not met.",
@@ -87,7 +82,6 @@ public class ErrorHandler {
     @ExceptionHandler(ConditionNotMetException.class)
     public ApiError handleConditionNotMetException(ConditionNotMetException e) {
         log.error(String.format("ConditionNotMetException error: %s", e.getMessage()));
-//        log.error(String.format("stackTrace: %s", stackTrace(e)));
         return ApiError.of(
                 HttpStatus.FORBIDDEN,
                 "For the requested operation the conditions are not met.",

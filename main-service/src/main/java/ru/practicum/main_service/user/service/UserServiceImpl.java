@@ -6,6 +6,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.main_service.exception.NotFoundException;
+import ru.practicum.main_service.user.dto.UserDto;
+import ru.practicum.main_service.user.mapper.UserMapper;
 import ru.practicum.main_service.user.model.User;
 import ru.practicum.main_service.user.repository.UserRepository;
 import ru.practicum.main_service.utils.PageRequestCustom;
@@ -18,17 +20,18 @@ import java.util.List;
 @Transactional(readOnly = true)
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
+    private final UserMapper userMapper;
 
     @Override
     @Transactional
-    public User registerUser(User user) {
-        User newUser = userRepository.save(user);
+    public UserDto registerUser(UserDto userDto) {
+        User newUser = userRepository.save(userMapper.toUser(userDto));
         log.info("создан пользователь {}", newUser);
-        return newUser;
+        return userMapper.toUserDto(newUser);
     }
 
     @Override
-    public List<User> getUsers(List<Long> ids, int from, int size) {
+    public List<UserDto> getUsers(List<Long> ids, int from, int size) {
         List<User> userList;
         if (ids != null && !ids.isEmpty()) {
             userList = userRepository.findAllById(ids);
@@ -37,7 +40,7 @@ public class UserServiceImpl implements UserService {
             userList = userRepository.findAllByOrderById(page);
         }
         log.info("получены пользователи {}", userList);
-        return userList;
+        return userMapper.toUserDto(userList);
     }
 
     @Override

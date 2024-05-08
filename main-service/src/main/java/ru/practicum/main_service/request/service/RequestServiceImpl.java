@@ -9,7 +9,9 @@ import ru.practicum.main_service.event.model.Event;
 import ru.practicum.main_service.event.repository.EventRepository;
 import ru.practicum.main_service.exception.ConditionNotMetException;
 import ru.practicum.main_service.exception.NotFoundException;
+import ru.practicum.main_service.request.dto.ParticipationRequestDto;
 import ru.practicum.main_service.request.enums.RequestStatus;
+import ru.practicum.main_service.request.mapper.RequestMapper;
 import ru.practicum.main_service.request.model.ParticipationRequest;
 import ru.practicum.main_service.request.repository.RequestRepository;
 import ru.practicum.main_service.user.model.User;
@@ -26,10 +28,11 @@ public class RequestServiceImpl implements RequestService {
     private final EventRepository eventRepository;
     private final RequestRepository requestRepository;
     private final UserRepository userRepository;
+    private final RequestMapper requestMapper;
 
     @Override
     @Transactional
-    public ParticipationRequest addParticipationRequest(Long userId, Long eventId) {
+    public ParticipationRequestDto addParticipationRequest(Long userId, Long eventId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException(String.format("User with id=%d was not found", userId)));
         Event event = eventRepository.findById(eventId)
@@ -58,27 +61,27 @@ public class RequestServiceImpl implements RequestService {
                 .build();
         ParticipationRequest newRequest = requestRepository.save(request);
         log.info("Создана заявка {}", newRequest);
-        return newRequest;
+        return requestMapper.toDto(newRequest);
     }
 
     @Override
-    public List<ParticipationRequest> getUserRequests(Long userId) {
+    public List<ParticipationRequestDto> getUserRequests(Long userId) {
         userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException(String.format("User with id=%d was not found", userId)));
         List<ParticipationRequest> requests = requestRepository.findAllByRequesterId(userId);
         log.info("Получены заявки {}", requests);
-        return requests;
+        return requestMapper.toDto(requests);
     }
 
     @Override
     @Transactional
-    public ParticipationRequest cancelRequest(Long userId, Long requestId) {
+    public ParticipationRequestDto cancelRequest(Long userId, Long requestId) {
         userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException(String.format("User with id=%d was not found", userId)));
         ParticipationRequest request = requestRepository.findByIdAndRequesterId(requestId, userId)
                 .orElseThrow(() -> new NotFoundException(String.format("Request with id=%d was not found", requestId)));
         request.setStatus(RequestStatus.CANCELED);
         log.info("Отменена заявка {}", request);
-        return request;
+        return requestMapper.toDto(request);
     }
 }
