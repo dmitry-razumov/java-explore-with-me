@@ -16,14 +16,13 @@ import java.util.List;
 @RequiredArgsConstructor
 @Validated
 @RestController
-@RequestMapping
 public class PublicCommentController {
     private final PublicCommentService commentService;
 
     @GetMapping("/comments/{id}")
     @ResponseStatus(HttpStatus.OK)
     public CommentDto getComment(@PathVariable Long id) {
-        log.info("GET /comments/{} Получение комментария", id);
+        log.info("GET /comments/{} request comment", id);
         return commentService.getComment(id);
     }
 
@@ -32,7 +31,7 @@ public class PublicCommentController {
     public List<CommentDto> getEventComments(@PathVariable Long eventId,
                                              @PositiveOrZero @RequestParam(defaultValue = "0") Integer from,
                                              @Positive @RequestParam(defaultValue = "10") Integer size) {
-        log.info("GET /events/{}/comments Получение комментариев для события from={} size={}", eventId, from, size);
+        log.info("GET /events/{}/comments request comments for event from={} size={}", eventId, from, size);
         return commentService.getEventComments(eventId, from, size);
     }
 }

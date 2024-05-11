@@ -22,6 +22,6 @@ public class AdminCommentServiceImpl implements AdminCommentService {
                 .orElseThrow(() -> new NotFoundException(String.format("Comment with id=%d was not found",
                         commentId)));
         commentRepository.delete(comment);
-        log.info("Админом удалён комментарий {}", comment);
+        log.info("comment was delete by admin {}", comment);
     }
 }

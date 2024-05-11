@@ -27,7 +27,7 @@ public class CategoryServiceImpl implements CategoryService {
     @Transactional
     public CategoryDto addCategory(NewCategoryDto newCategoryDto) {
         Category newCategory = categoryRepository.save(categoryMapper.toCategory(newCategoryDto));
-        log.info("создана категория {}", newCategory);
+        log.info("category was save {}", newCategory);
         return categoryMapper.toCategoryDto(newCategory);
     }
 
@@ -37,7 +37,7 @@ public class CategoryServiceImpl implements CategoryService {
         Category updatedCategory = categoryRepository.findById(catId)
                 .orElseThrow(() -> new NotFoundException(String.format("Category with id=%d was not found", catId)));
         updatedCategory.setName(categoryMapper.toCategory(newCategoryDto).getName());
-        log.info("обновлена категория {}", updatedCategory);
+        log.info("update category {}", updatedCategory);
         return categoryMapper.toCategoryDto(updatedCategory);
     }
 
@@ -47,14 +47,14 @@ public class CategoryServiceImpl implements CategoryService {
         categoryRepository.findById(catId)
                 .orElseThrow(() -> new NotFoundException(String.format("Category with id=%d was not found", catId)));
         categoryRepository.deleteById(catId);
-        log.info("удалена категория c id={}", catId);
+        log.info("delete category with id={}", catId);
     }
 
     @Override
     public List<CategoryDto> getCategories(int from, int size) {
         Pageable page = PageRequestCustom.get(from, size);
         List<Category> categories = categoryRepository.findAllByOrderById(page);
-        log.info("получены категории {}", categories);
+        log.info("find categories {}", categories);
         return categoryMapper.toCategoryDto(categories);
     }
 
@@ -62,7 +62,7 @@ public class CategoryServiceImpl implements CategoryService {
     public CategoryDto getCategory(Long catId) {
         Category category = categoryRepository.findById(catId)
                 .orElseThrow(() -> new NotFoundException(String.format("Category with id=%d was not found", catId)));
-        log.info("получена категория {} c id={}", category, catId);
+        log.info("find a category {} with id={}", category, catId);
         return categoryMapper.toCategoryDto(category);
     }
 }

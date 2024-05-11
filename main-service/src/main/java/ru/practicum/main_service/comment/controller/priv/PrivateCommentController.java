@@ -24,7 +24,7 @@ public class PrivateCommentController {
     @ResponseStatus(HttpStatus.CREATED)
     public CommentDto addComment(@PathVariable Long userId, @RequestParam Long eventId,
                                  @RequestBody @Valid NewCommentDto newCommentDto) {
-        log.info("POST /users/{}/comments?eventId={} Добавление комментария {} от userId к событию EventId",
+        log.info("POST /users/{}/comments?eventId={} add comment {} from userId for event with EventId",
                 userId, eventId, newCommentDto);
         return commentService.addComment(userId, eventId, newCommentDto);
     }
@@ -32,7 +32,7 @@ public class PrivateCommentController {
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
     public List<CommentDto> getUserComments(@PathVariable Long userId, @RequestParam(required = false) Long eventId) {
-        log.info("GET /users/{}/comments?eventId={} Получение комментариев userId к событию EventId",
+        log.info("GET /users/{}/comments?eventId={} request comments from userId for event with EventId",
                 userId, eventId);
         return commentService.getUserComments(userId, eventId);
     }

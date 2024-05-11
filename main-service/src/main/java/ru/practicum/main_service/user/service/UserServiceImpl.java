@@ -26,7 +26,7 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public UserDto registerUser(UserDto userDto) {
         User newUser = userRepository.save(userMapper.toUser(userDto));
-        log.info("создан пользователь {}", newUser);
+        log.info("user was save {}", newUser);
         return userMapper.toUserDto(newUser);
     }
 
@@ -39,7 +39,7 @@ public class UserServiceImpl implements UserService {
             Pageable page = PageRequestCustom.get(from, size);
             userList = userRepository.findAllByOrderById(page);
         }
-        log.info("получены пользователи {}", userList);
+        log.info("find users {}", userList);
         return userMapper.toUserDto(userList);
     }
 
@@ -49,6 +49,6 @@ public class UserServiceImpl implements UserService {
         userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException(String.format("User with id=%d was not found", userId)));
         userRepository.deleteById(userId);
-        log.info("удален пользователь c id={}", userId);
+        log.info("user with id={} was delete", userId);
     }
 }

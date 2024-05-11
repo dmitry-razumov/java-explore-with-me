@@ -20,7 +20,7 @@ public class PrivateRequestController {
     @PostMapping("/{userId}/requests")
     @ResponseStatus(HttpStatus.CREATED)
     public ParticipationRequestDto addParticipationRequest(@PathVariable Long userId, @RequestParam Long eventId) {
-        log.info("POST /users/{}/requests?eventId={} Добавление запроса от текущего пользователя на участие в событии",
+        log.info("POST /users/{}/requests?eventId={} request for add request for participation in an event by user",
                 userId, eventId);
         return requestService.addParticipationRequest(userId, eventId);
     }
@@ -28,7 +28,7 @@ public class PrivateRequestController {
     @GetMapping("/{userId}/requests")
     @ResponseStatus(HttpStatus.OK)
     public List<ParticipationRequestDto> getUserRequests(@PathVariable Long userId) {
-        log.info("GET /users/{}/requests Получение информации о заявках пользователя на участие в чужих событиях",
+        log.info("GET /users/{}/requests request info about user requests in other people's event",
                 userId);
         return requestService.getUserRequests(userId);
     }
@@ -36,7 +36,7 @@ public class PrivateRequestController {
     @PatchMapping("/{userId}/requests/{requestId}/cancel")
     @ResponseStatus(HttpStatus.OK)
     public ParticipationRequestDto cancelRequest(@PathVariable Long userId, @PathVariable Long requestId) {
-        log.info("PATCH /users/{}/requests/{}/cancel Отмена своего запроса на участие в событии",
+        log.info("PATCH /users/{}/requests/{}/cancel request for cancel user request to participate in an event",
                 userId, requestId);
         return requestService.cancelRequest(userId, requestId);
     }

@@ -39,7 +39,7 @@ public class PrivateCommentServiceImpl implements PrivateCommentService {
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> new NotFoundException(String.format("Event with id=%d was not found", eventId)));
         if (!event.getState().equals(EventState.PUBLISHED)) {
-            throw new ConditionNotMetException("Нельзя добавить комментарий к неопубликованному событию");
+            throw new ConditionNotMetException("cannot add a comment to an unpublished event");
         }
         Comment comment = Comment.builder()
                 .created(LocalDateTime.now())
@@ -49,7 +49,7 @@ public class PrivateCommentServiceImpl implements PrivateCommentService {
                 .event(event)
                 .build();
         Comment newComment = commentRepository.save(comment);
-        log.info("Создан комментарий {}", newComment);
+        log.info("comment was save {}", newComment);
         return commentMapper.toDto(newComment);
     }
 
@@ -59,11 +59,11 @@ public class PrivateCommentServiceImpl implements PrivateCommentService {
         if (eventId == null) {
             comments = commentRepository.findAllByCommentatorId(userId)
                     .orElse(Collections.emptyList());
-            log.info("получены все комментарии {} для userId={}", comments, userId);
+            log.info("find all comments {} for userId={}", comments, userId);
         } else {
             comments = commentRepository.findByEventIdAndCommentatorId(eventId, userId)
                     .orElse(Collections.emptyList());
-            log.info("получены комментарии {} для eventId={} userId={}", comments, eventId, userId);
+            log.info("find comments {} для eventId={} userId={}", comments, eventId, userId);
         }
         return commentMapper.toDto(comments);
     }
@@ -74,11 +74,11 @@ public class PrivateCommentServiceImpl implements PrivateCommentService {
         userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException(String.format("User with id=%d was not found", userId)));
         Comment comment = commentRepository.findByIdAndCommentatorId(commentId, userId)
-                .orElseThrow(() -> new ConditionNotMetException(String.format("Нельзя изменить чужой комментарий id=%d",
+                .orElseThrow(() -> new ConditionNotMetException(String.format("can't edit someone else's comment id=%d",
                         commentId)));
         comment.setText(updateCommentDto.getText());
         comment.setChanged(true);
-        log.info("Изменён комментарий {}", comment);
+        log.info("update a comment {}", comment);
         return commentMapper.toDto(comment);
     }
 
@@ -88,9 +88,9 @@ public class PrivateCommentServiceImpl implements PrivateCommentService {
         userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException(String.format("User with id=%d was not found", userId)));
         Comment comment = commentRepository.findByIdAndCommentatorId(commentId, userId)
-                .orElseThrow(() -> new ConditionNotMetException(String.format("Нельзя удалить чужой комментарий id=%d",
+                .orElseThrow(() -> new ConditionNotMetException(String.format("can't delete someone else's comment id=%d",
                         commentId)));
         commentRepository.delete(comment);
-        log.info("Удалён комментарий {}", comment);
+        log.info("comment was delete by owner {}", comment);
     }
 }

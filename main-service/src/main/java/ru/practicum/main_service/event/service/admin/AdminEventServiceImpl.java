@@ -46,7 +46,7 @@ public class AdminEventServiceImpl implements AdminEventService {
         Event event = eventMapper.toEvent(updateEventAdminRequestDto);
         Event updateEvent = eventRepository.findById(eventId)
                 .orElseThrow(() -> new NotFoundException(String.format("Event with id=%d was not found", eventId)));
-        log.info("событие для обновления {}", updateEvent);
+        log.info("event for update {}", updateEvent);
         LocalDateTime publishDate = updateEvent.getPublishedOn() != null ? updateEvent.getPublishedOn()
                 : LocalDateTime.now();
         LocalDateTime newEventDate = event.getEventDate();
@@ -57,8 +57,8 @@ public class AdminEventServiceImpl implements AdminEventService {
                 updateEvent.getEventDate().minusHours(ADMIN_DELTA_IN_HOURS).isBefore(publishDate));
         if (updateEvent.getEventDate().minusHours(ADMIN_DELTA_IN_HOURS).isBefore(publishDate)
             || (newEventDate != null && newEventDate.minusHours(ADMIN_DELTA_IN_HOURS).isBefore(publishDate))) {
-                throw new BadRequestException("Field: eventDate. Error: должно содержать дату, не ранее чем за час " +
-                        "от даты публикации. Value: " + updateEvent.getEventDate());
+                throw new BadRequestException("Field: eventDate. Error: date must be no earlier than an hour " +
+                        "from published date. Value: " + updateEvent.getEventDate());
         }
         if (event.getState() != null &&
                 event.getState().equals(EventState.PUBLISHED) && !updateEvent.getState().equals(EventState.PENDING)) {
@@ -84,7 +84,7 @@ public class AdminEventServiceImpl implements AdminEventService {
         eventMapper.updateEvent(event, updateEvent);
         Map<Long, Long> views = eventStats.getStats(List.of(updateEvent));
         updateEvent.setViews(views.getOrDefault(updateEvent.getId(), 0L));
-        log.info("обновлено событие {}", updateEvent);
+        log.info("event was update {}", updateEvent);
         return eventMapper.toEventFullDto(updateEvent);
     }
 
@@ -116,7 +116,7 @@ public class AdminEventServiceImpl implements AdminEventService {
         List<Event> events = eventRepository.findAll(specification, page).getContent();
         Map<Long, Long> views = eventStats.getStats(events);
         events.forEach(event -> event.setViews(views.getOrDefault(event.getId(), 0L)));
-        log.info("получены события {}", events);
+        log.info("find events {}", events);
         return eventMapper.toEventFullDto(events);
     }
 

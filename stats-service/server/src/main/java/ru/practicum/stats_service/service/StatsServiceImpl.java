@@ -22,23 +22,23 @@ public class StatsServiceImpl implements StatsService {
     @Transactional
     public EndpointHit createHit(EndpointHit endpointHit) {
         EndpointHit newEndpointHit = statsRepository.save(endpointHit);
-        log.info("создан endpointHit - {}", newEndpointHit);
+        log.info("create endpointHit - {}", newEndpointHit);
         return newEndpointHit;
     }
 
     @Override
     public List<ViewStatsDto> getStats(LocalDateTime start, LocalDateTime end, List<String> uris, Boolean unique) {
-        log.info("запрос start = {}, end = {}, uris = {}, unique = {}", start, end, uris, unique);
+        log.info("request start = {}, end = {}, uris = {}, unique = {}", start, end, uris, unique);
         if (end.isBefore(start)) {
-            throw new ValidationException("дата начала не может быть позже даты конца выборки");
+            throw new ValidationException("the start date cannot be later than the end date of selection");
         }
         List<ViewStatsDto> viewStatsList;
         if (unique) {
             viewStatsList = statsRepository.getViewStatsUnique(start, end, uris);
-            log.info("получен unique viewStatsList = {}", viewStatsList);
+            log.info("get unique viewStatsList = {}", viewStatsList);
         } else {
             viewStatsList = statsRepository.getViewStats(start, end, uris);
-            log.info("получен viewStatsList = {}", viewStatsList);
+            log.info("get viewStatsList = {}", viewStatsList);
         }
         return viewStatsList;
     }

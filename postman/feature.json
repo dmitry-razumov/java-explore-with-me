@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "9841b8c3-49fa-4fac-9ef4-b503b209eb19",
+		"_postman_id": "c57cc855-7007-4347-bb65-3a3d8e846408",
 		"name": "Test Explore With Me - feature comments",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "28410285"
@@ -151,7 +151,6 @@
 								{
 									"key": "userId",
 									"value": "{{uid}}",
-									"type": "string",
 									"description": "(Required) id текущего пользователя"
 								}
 							]
@@ -296,7 +295,6 @@
 								{
 									"key": "userId",
 									"value": "{{uid}}",
-									"type": "string",
 									"description": "(Required) id текущего пользователя"
 								},
 								{
@@ -425,7 +423,6 @@
 								{
 									"key": "userId",
 									"value": "{{uid}}",
-									"type": "string",
 									"description": "(Required) id текущего пользователя"
 								},
 								{
@@ -556,7 +553,6 @@
 								{
 									"key": "userId",
 									"value": "{{uid}}",
-									"type": "string",
 									"description": "(Required) id текущего пользователя"
 								},
 								{
@@ -794,7 +790,6 @@
 								{
 									"key": "userId",
 									"value": "{{uid}}",
-									"type": "string",
 									"description": "(Required) id текущего пользователя"
 								},
 								{
@@ -934,7 +929,6 @@
 								{
 									"key": "userId",
 									"value": "{{uid}}",
-									"type": "string",
 									"description": "(Required) id текущего пользователя"
 								}
 							]
@@ -1065,7 +1059,6 @@
 								{
 									"key": "userId",
 									"value": "{{uid}}",
-									"type": "string",
 									"description": "(Required) id текущего пользователя"
 								}
 							]
@@ -1214,7 +1207,6 @@
 								{
 									"key": "userId",
 									"value": "{{uid}}",
-									"type": "string",
 									"description": "(Required) id текущего пользователя"
 								}
 							]
@@ -1484,7 +1476,6 @@
 												{
 													"key": "userId",
 													"value": "{{uid}}",
-													"type": "string",
 													"description": "(Required) id текущего пользователя"
 												}
 											]
@@ -2386,6 +2377,29 @@
 							"name": "Попытка добавить комментарий к неопубликованному событию",
 							"event": [
 								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Ответ должен содержать код статуса 409 и данные в формате json\", function () {",
+											"    pm.response.to.have.status(409);    ",
+											"    pm.response.to.be.withBody;",
+											"    pm.response.to.be.json;",
+											"});",
+											"",
+											"const source = JSON.parse(pm.request.body.raw);",
+											"const target = pm.response.json();",
+											"",
+											"pm.test(\"Данные в ответе должны содержать message = cannot add a comment to an unpublished event\", function () {",
+											"    pm.expect(target).to.have.property('message');",
+											"    pm.expect(target.message).equal('cannot add a comment to an unpublished event');",
+											"});",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
 									"listen": "prerequest",
 									"script": {
 										"exec": [
@@ -2426,29 +2440,6 @@
 											"    },  ",
 											"    100 ",
 											");"
-										],
-										"type": "text/javascript",
-										"packages": {}
-									}
-								},
-								{
-									"listen": "test",
-									"script": {
-										"exec": [
-											"pm.test(\"Ответ должен содержать код статуса 409 и данные в формате json\", function () {",
-											"    pm.response.to.have.status(409);    ",
-											"    pm.response.to.be.withBody;",
-											"    pm.response.to.be.json;",
-											"});",
-											"",
-											"const source = JSON.parse(pm.request.body.raw);",
-											"const target = pm.response.json();",
-											"",
-											"pm.test(\"Данные в ответе должны содержать message = Нельзя добавить комментарий к неопубликованному событию\", function () {",
-											"    pm.expect(target).to.have.property('message');",
-											"    pm.expect(target.message).equal('Нельзя добавить комментарий к неопубликованному событию');",
-											"});",
-											""
 										],
 										"type": "text/javascript",
 										"packages": {}

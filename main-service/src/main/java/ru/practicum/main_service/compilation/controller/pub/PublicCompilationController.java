@@ -23,7 +23,7 @@ public class PublicCompilationController {
     public List<CompilationDto> getCompilations(@RequestParam(required = false) Boolean pinned,
                                        @RequestParam(defaultValue = "0") @PositiveOrZero Integer from,
                                        @RequestParam(defaultValue = "10") @Positive Integer size) {
-        log.info("GET /compilations Получение подборок событий с возможностью фильтрации pinned={} from={} size={}",
+        log.info("GET /compilations request compilations with filters: pinned={} from={} size={}",
                 pinned, from, size);
         return compilationService.getCompilations(pinned,from, size);
     }
@@ -31,7 +31,7 @@ public class PublicCompilationController {
     @GetMapping("/{compId}")
     @ResponseStatus(HttpStatus.OK)
     public CompilationDto getCompilation(@PathVariable Long compId) {
-        log.info("GET /compilations/{} Получение подборки событий по его id", compId);
+        log.info("GET /compilations/{} request a compilation by id", compId);
         return compilationService.getCompilation(compId);
     }
 }

@@ -24,7 +24,7 @@ public class PublicCommentServiceImpl implements PublicCommentService {
     public CommentDto getComment(Long id) {
         Comment comment = commentRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException(String.format("Comment with id=%d was not found", id)));
-        log.info("Получен комментарий {}", comment);
+        log.info("find a comment {}", comment);
         return commentMapper.toDto(comment);
     }
 
@@ -32,7 +32,7 @@ public class PublicCommentServiceImpl implements PublicCommentService {
     public List<CommentDto> getEventComments(Long eventId, Integer from, Integer size) {
         Pageable page = PageRequestCustom.get(from, size);
         List<Comment> comments = commentRepository.findAllByEventId(eventId, page);
-        log.info("Получены комментарии {} from={} size={}", comments, from, size);
+        log.info("find comments {} from={} size={}", comments, from, size);
         return commentMapper.toDto(comments);
     }
 }
