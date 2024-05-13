@@ -20,7 +20,7 @@ public class AdminCategoryController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public CategoryDto addCategory(@Valid @RequestBody NewCategoryDto newCategoryDto) {
-        log.info("POST /admin/categories данные добавляемой категории {}", newCategoryDto);
+        log.info("POST /admin/categories add new category by admin {}", newCategoryDto);
         return categoryService.addCategory(newCategoryDto);
     }
 
@@ -28,7 +28,7 @@ public class AdminCategoryController {
     @ResponseStatus(HttpStatus.OK)
     public CategoryDto updateCategory(@PathVariable Long catId,
                                       @Valid @RequestBody NewCategoryDto newCategoryDto) {
-        log.info("PATCH /admin/categories/{} данные категории для изменения {}", catId, newCategoryDto);
+        log.info("PATCH /admin/categories/{} update category by admin {}", catId, newCategoryDto);
         return categoryService.updateCategory(newCategoryDto, catId);
     }
 

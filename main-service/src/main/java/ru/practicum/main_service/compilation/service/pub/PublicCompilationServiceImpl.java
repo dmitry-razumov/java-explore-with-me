@@ -35,7 +35,7 @@ public class PublicCompilationServiceImpl implements PublicCompilationService {
                 compilation.setEvents(new HashSet<>(compilation.getEvents()));
             }
         }
-        log.info("получены подборки событий {}", compilations);
+        log.info("find compilations {}", compilations);
         return compilationMapper.toDto(compilations);
     }
 
@@ -47,7 +47,7 @@ public class PublicCompilationServiceImpl implements PublicCompilationService {
         if (compilation.getEvents() != null) {
             compilation.setEvents(new HashSet<>(compilation.getEvents()));
         }
-        log.info("получена подборка событий {}", compilation);
+        log.info("find a compilation {}", compilation);
         return compilationMapper.toDto(compilation);
     }
 }

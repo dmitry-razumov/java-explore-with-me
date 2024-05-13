@@ -30,7 +30,7 @@ public class AdminEventController {
     @ResponseStatus(HttpStatus.OK)
     public EventFullDto updateEventByAdmin(@PathVariable Long eventId,
                                            @RequestBody @Valid UpdateEventAdminRequestDto event) {
-        log.info("PATCH /admin/events/{} изменениe информации о событии админом {}", eventId, event);
+        log.info("PATCH /admin/events/{} request for update event by admin {}", eventId, event);
         return adminEventService.updateEventByAdmin(event, eventId);
     }
 
@@ -46,7 +46,7 @@ public class AdminEventController {
                                                @RequestParam (defaultValue = "0") @PositiveOrZero Integer from,
                                                @RequestParam (defaultValue = "10") @Positive Integer size) {
 
-        log.info("GET /admin/events поиск событий для userIds={} eventStates={} categoriesIds={} " +
+        log.info("GET /admin/events find events for userIds={} eventStates={} categoriesIds={} " +
                         "rangeStart={} rangeEnd={} from={} size={}", userIds, eventStates, categoriesIds,
                         rangeStart, rangeEnd, from, size);
         return adminEventService.getEventsByAdmin(userIds, eventStates, categoriesIds,

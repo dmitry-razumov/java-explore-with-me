@@ -43,7 +43,7 @@ public class PublicEventController {
                                          @RequestParam (defaultValue = "10") @Positive  Integer size,
                                          HttpServletRequest request) {
 
-        log.info("GET /events Получение событий с возможностью фильтрации text={} categoriesIds={} paid={} " +
+        log.info("GET /events request events with filters: text={} categoriesIds={} paid={} " +
                         "rangeStart={} rangeEnd={} onlyAvailable={} sort={} from={} size={}", text, categoriesIds,
                 paid, rangeStart, rangeEnd, onlyAvailable, sort, from, size);
         eventStats.saveStats(request);
@@ -54,7 +54,7 @@ public class PublicEventController {
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     public EventFullDto getEvent(@PathVariable Long id, HttpServletRequest request) {
-        log.info("GET /events/{} Получение подробной информации об опубликованном событии", id);
+        log.info("GET /events/{} request full info about published event", id);
         eventStats.saveStats(request);
         return publicEventService.getEvent(id);
     }

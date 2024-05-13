@@ -35,7 +35,7 @@ public class PublicEventServiceImpl implements PublicEventService {
                                          LocalDateTime rangeStart, LocalDateTime rangeEnd, Boolean onlyAvailable,
                                          String sort, Integer from, Integer size) {
         if (rangeStart != null && rangeEnd.isBefore(rangeStart)) {
-            throw new BadRequestException("конечные дата и время должны быть позже начальной даты и времени");
+            throw new BadRequestException("the end date and time must be later than the start date and time");
         }
         Specification<Event> specification = (Root<Event> root, CriteriaQuery<?> query, CriteriaBuilder builder) -> {
             List<Predicate> predicates = new ArrayList<>();
@@ -84,10 +84,10 @@ public class PublicEventServiceImpl implements PublicEventService {
                         break;
                 }
             }
-            log.info("получены сортированные события {}", sorted);
+            log.info("find sorted events {}", sorted);
             return eventMapper.toEventShortDto(sorted);
         }
-        log.info("получены несортированные события {}", events);
+        log.info("find events without sort {}", events);
         return eventMapper.toEventShortDto(events);
     }
 
@@ -97,7 +97,7 @@ public class PublicEventServiceImpl implements PublicEventService {
                 .orElseThrow(() -> new NotFoundException(String.format("Event with id=%d was not found", id)));
         Map<Long, Long> views = eventStats.getStats(List.of(event));
         event.setViews(views.getOrDefault(event.getId(), 0L));
-        log.info("получено событие {}", event);
+        log.info("find an event {}", event);
         return eventMapper.toEventFullDto(event);
     }
 

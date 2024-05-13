@@ -38,18 +38,18 @@ public class RequestServiceImpl implements RequestService {
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> new NotFoundException(String.format("Event with id=%d was not found", eventId)));
         if (requestRepository.existsByRequesterIdAndEventId(userId, eventId)) {
-            throw new ConditionNotMetException("Нельзя добавить повторный запрос");
+            throw new ConditionNotMetException("Can't add the same request");
         }
         if (!event.getState().equals(EventState.PUBLISHED)) {
-            throw new ConditionNotMetException("Нельзя участвовать в неопубликованном событии");
+            throw new ConditionNotMetException("Cannot participate in an unpublished event");
         }
         if (event.getInitiator().getId().equals(userId)) {
-            throw new ConditionNotMetException("Инициатор события не может добавить запрос на участие в своём событии");
+            throw new ConditionNotMetException("The event initiator cannot add a request to participate in his event");
         }
         if (event.getParticipantLimit() != 0) {
             Integer requests = requestRepository.countAllByEventIdAndStatusIs(eventId, RequestStatus.CONFIRMED);
             if (event.getParticipantLimit().equals(requests)) {
-                throw new ConditionNotMetException("У события достигнут лимит запросов на участие");
+                throw new ConditionNotMetException("The event has reached the limit of participation requests");
             }
         }
         ParticipationRequest request = ParticipationRequest.builder()
@@ -60,7 +60,7 @@ public class RequestServiceImpl implements RequestService {
                         ? RequestStatus.CONFIRMED : RequestStatus.PENDING)
                 .build();
         ParticipationRequest newRequest = requestRepository.save(request);
-        log.info("Создана заявка {}", newRequest);
+        log.info("request was save {}", newRequest);
         return requestMapper.toDto(newRequest);
     }
 
@@ -69,7 +69,7 @@ public class RequestServiceImpl implements RequestService {
         userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException(String.format("User with id=%d was not found", userId)));
         List<ParticipationRequest> requests = requestRepository.findAllByRequesterId(userId);
-        log.info("Получены заявки {}", requests);
+        log.info("find requests {}", requests);
         return requestMapper.toDto(requests);
     }
 
@@ -81,7 +81,7 @@ public class RequestServiceImpl implements RequestService {
         ParticipationRequest request = requestRepository.findByIdAndRequesterId(requestId, userId)
                 .orElseThrow(() -> new NotFoundException(String.format("Request with id=%d was not found", requestId)));
         request.setStatus(RequestStatus.CANCELED);
-        log.info("Отменена заявка {}", request);
+        log.info("request was cancel {}", request);
         return requestMapper.toDto(request);
     }
 }

@@ -51,7 +51,7 @@ public class PrivateEventServiceImpl implements PrivateEventService {
     public EventFullDto addEvent(NewEventDto newEventDto, Long userId) {
         Event event = eventMapper.toEvent(newEventDto);
         if (!event.getEventDate().isAfter(LocalDateTime.now().plusHours(USER_DELTA_IN_HOURS))) {
-            throw new BadRequestException("Field: eventDate. Error: должно содержать дату, которая еще не наступила." +
+            throw new BadRequestException("Field: eventDate. Error: date must be that not yet arrived." +
                     " Value: " + event.getEventDate());
         }
         Long catId = event.getCategory().getId();
@@ -64,7 +64,7 @@ public class PrivateEventServiceImpl implements PrivateEventService {
         event.setInitiator(initiator);
         event.setState(EventState.PENDING);
         Event newEvent = eventRepository.save(event);
-        log.info("создано событие {}", newEvent);
+        log.info("event was save {}", newEvent);
         return eventMapper.toEventFullDto(newEvent);
     }
 
@@ -76,7 +76,7 @@ public class PrivateEventServiceImpl implements PrivateEventService {
         List<Event> events = eventRepository.findAllByInitiatorId(userId, page);
         Map<Long, Long> views = eventStats.getStats(events);
         events.forEach(event -> event.setViews(views.getOrDefault(event.getId(), 0L)));
-        log.info("получены события {}", events);
+        log.info("find events {}", events);
         return eventMapper.toEventShortDto(events);
     }
 
@@ -92,7 +92,7 @@ public class PrivateEventServiceImpl implements PrivateEventService {
         Integer notPendingRequestsByIds = requestRepository.countAllByEventIdAndStatusNotAndIdIn(eventId,
                 RequestStatus.PENDING, eventRequests.getRequestIds());
         if (notPendingRequestsByIds != 0) {
-            throw new ConditionNotMetException("Cтатус можно изменить только у заявок в состоянии ожидания");
+            throw new ConditionNotMetException("The status can only be changed for applications in a pending state");
         }
         List<ParticipationRequest> pendingRequests = requestRepository.findAllByEventIdAndStatusAndIdIn(eventId,
                 RequestStatus.PENDING, eventRequests.getRequestIds());
@@ -105,10 +105,12 @@ public class PrivateEventServiceImpl implements PrivateEventService {
                 int confirmedLimit = event.getParticipantLimit();
                 log.info("== case CONFIRMED confirmedLimit {}", confirmedLimit);
                 if (confirmedLimit == 0) {
-                    throw new BadRequestException("Подтверждение заявок не требуется, для события лимит заявок равен 0");
+                    throw new BadRequestException("Confirmation of requests is not required," +
+                            " the order limit for the event is 0");
                 }
                 if (!event.getRequestModeration()) {
-                    throw new BadRequestException("Подтверждение заявок не требуется, у события отключена пре-модерация заявок");
+                    throw new BadRequestException("Confirmation of requests is not required," +
+                            " pre-moderation of requests is disabled for the event");
                 }
                 if (confirmedRequests >= confirmedLimit) {
                     throw new ConditionNotMetException("The participant limit has been reached");
@@ -151,7 +153,7 @@ public class PrivateEventServiceImpl implements PrivateEventService {
             return Collections.emptyList();
         }
         List<ParticipationRequest> requests = requestRepository.findAllByEventId(eventId);
-        log.info("получены requests {} для eventId={} userId={}", requests, eventId, userId);
+        log.info("find requests {} for eventId={} userId={}", requests, eventId, userId);
         return requestMapper.toDto(requests);
     }
 
@@ -162,7 +164,7 @@ public class PrivateEventServiceImpl implements PrivateEventService {
                         " was not found", eventId, userId)));
         Map<Long, Long> views = eventStats.getStats(List.of(event));
         event.setViews(views.getOrDefault(event.getId(), 0L));
-        log.info("Для user id={} получено событие {}", userId, event);
+        log.info("for user id={} find an event {}", userId, event);
         return eventMapper.toEventFullDto(event);
     }
 
@@ -173,13 +175,13 @@ public class PrivateEventServiceImpl implements PrivateEventService {
         Event updateEvent = eventRepository.findByIdAndInitiatorId(eventId, userId)
                 .orElseThrow(() -> new NotFoundException(String.format("Event with id=%d for user with id=%d" +
                         " was not found", eventId, userId)));
-        log.info("событие для обновления {}", updateEvent);
+        log.info("event for update {}", updateEvent);
         LocalDateTime dateTimeNow = LocalDateTime.now();
         LocalDateTime newEventDate = event.getEventDate();
         if (updateEvent.getEventDate().minusHours(USER_DELTA_IN_HOURS).isBefore(dateTimeNow)
                 || (newEventDate != null && newEventDate.minusHours(USER_DELTA_IN_HOURS).isBefore(dateTimeNow))) {
-            throw new BadRequestException("Field: eventDate. Error: должно содержать дату, не ранее чем через 2 часа " +
-                    "от текущего момента. Value: " + updateEvent.getEventDate());
+            throw new BadRequestException("Field: eventDate. Error: date must be that no earlier than 2 hours " +
+                    "before now. Value: " + updateEvent.getEventDate());
         }
         if (updateEvent.getState().equals(EventState.PUBLISHED)) {
             throw new ConditionNotMetException("Only pending or canceled events can be changed");
@@ -195,7 +197,7 @@ public class PrivateEventServiceImpl implements PrivateEventService {
         eventMapper.updateEvent(event, updateEvent);
         Map<Long, Long> views = eventStats.getStats(List.of(updateEvent));
         updateEvent.setViews(views.getOrDefault(updateEvent.getId(), 0L));
-        log.info("обновлено событие {}", updateEvent);
+        log.info("event was update {}", updateEvent);
         return eventMapper.toEventFullDto(updateEvent);
     }
 }

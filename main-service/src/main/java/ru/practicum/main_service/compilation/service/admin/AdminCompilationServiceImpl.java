@@ -42,7 +42,7 @@ public class AdminCompilationServiceImpl implements AdminCompilationService {
                         .events(new HashSet<>(events))
                         .build()
         );
-        log.info("создана подборка {}", compilation);
+        log.info("new compilation was save {}", compilation);
         return compilationMapper.toDto(compilation);
     }
 
@@ -53,7 +53,7 @@ public class AdminCompilationServiceImpl implements AdminCompilationService {
                 .orElseThrow(() ->
                         new NotFoundException(String.format("Compilation with id=%d was not found", compId)));
         compilationRepository.deleteById(compId);
-        log.info("удалена подборка с id={}", compId);
+        log.info("compilation with id={} was delete", compId);
     }
 
     @Override
@@ -75,7 +75,7 @@ public class AdminCompilationServiceImpl implements AdminCompilationService {
                 throw new BadRequestException("Field: title. Error: must not be blank");
             }
         }
-        log.info("обновлена подборка {}", compilation);
+        log.info("compilation was update {}", compilation);
         return compilationMapper.toDto(compilation);
     }
 }

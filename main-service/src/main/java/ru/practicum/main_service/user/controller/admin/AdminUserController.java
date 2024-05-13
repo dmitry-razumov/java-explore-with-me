@@ -24,7 +24,7 @@ public class AdminUserController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public UserDto registerUser(@Valid @RequestBody UserDto userDto) {
-        log.info("POST /admin/users Данные добавляемого пользователя {}", userDto);
+        log.info("POST /admin/users request for add user {}", userDto);
         return userService.registerUser(userDto);
     }
 
@@ -33,7 +33,7 @@ public class AdminUserController {
     public List<UserDto> getUsers(@RequestParam(required = false) List<Long> ids,
                                   @RequestParam(defaultValue = "0") @PositiveOrZero int from,
                                   @RequestParam(defaultValue = "10") @Positive int size) {
-        log.info("GET /admin/users Запрошены пользователи {} from={} size={}", ids, from, size);
+        log.info("GET /admin/users request users {} from={} size={}", ids, from, size);
         return userService.getUsers(ids, from, size);
     }
 
